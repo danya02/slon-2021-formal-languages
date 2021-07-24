@@ -1,18 +1,47 @@
 import pygame
+import math
+import config
+import common_utils
+from data import Data
 
 class Node:
-    def __init__(self, name, x, y, radius=20,
-                fill_color='white', stroke_color='black',
-                stroke_width=2):
-        self.name = name
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.radius = radius
-        self.fill_color = pygame.Color(fill_color)
-        self.stroke_color = pygame.Color(stroke_color)
-        self.stroke_width = stroke_width
+        self.mouse_offset_x = 0
+        self.mouse_offset_y = 0
+        self.is_accept_state = False
+        self.text = ''
+
+    def set_mouse_start(self, x, y):
+        self.mouse_offset_x = self.x - x
+        self.mouse_offset_y = self.y - y
+    
+    def set_anchor_point(self, x, y):
+        self.x = x + self.mouse_offset_x
+        self.y = y + self.mouse_offset_y
 
     def draw(self, surface):
-        pygame.draw.circle(surface, self.fill_color, (self.x, self.y), self.radius)
-        if self.stroke_width:
-            pygame.draw.circle(surface, self.stroke_color, (self.x, self.y), self.radius, width=self.stroke_width)
+        # draw the circle
+        pygame.draw.circle(surface, pygame.Color('black'), (self.x, self.y), config.node_radius, 1)
+
+        # draw the text
+        common_utils.draw_text(surface, self.text, self.x, self.y, None, False)
+
+        # draw a double circle for the accept state
+        if self.is_accept_state:
+            pygame.draw.circle(surface, pygame.Color('black'), (self.x, self.y), config.node_radius - 6, 1)
+
+        
+    def closest_point_on_circle(self, x, y):
+        dx = x - self.x
+        dy = y - self.y
+        scale = math.sqrt(dx*dx + dy*dy)
+        return Data(
+            x = self.x + dx * config.node_radius / scale,
+            y = self.y + dy * config.node_radius / scale
+        )
+
+
+    def contains_point(self, x, y):
+        return (x - self.x)*(x - self.x) + (y - self.y)*(y - self.y) < config.node_radius*config.node_radius
