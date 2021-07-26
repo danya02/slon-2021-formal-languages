@@ -154,3 +154,33 @@ class Link:
             distance = (dx * (y - stuff.startY) - dy * (x - stuff.startX)) / length
             return percent > 0 and percent < 1 and abs(distance) < config.hit_target_padding
         return False
+
+    def save(self):
+        d = {}
+        d['nodeA'] = self.nodeA.id
+        d['nodeB'] = self.nodeB.id
+        if self.text:
+            d['text'] = self.text
+        if self.line_angle_adjust:
+            d['line_angle_adjust'] = self.line_angle_adjust
+
+        if self.parallel_part != 0.5 and self.perpendicular_part != 0:
+            d['parallel_part'] = self.parallel_part
+            d['perpendicular_part'] = self.perpendicular_part
+
+        return d
+
+    @classmethod
+    def load(cls, d, nodes):
+        na = None
+        nb = None
+        for node in nodes:
+            if node.id == d['nodeA']: na = node
+            elif node.id == d['nodeB']: nb = node
+
+        self = cls(na, nb)
+        if 'text' in d: self.text = d['text']
+        if 'line_angle_adjust' in d: self.line_angle_adjust = d['line_angle_adjust']
+        if 'parallel_part' in d: self.parallel_part = d['parallel_part']
+        if 'perpendicular_part' in d: self.perpendicular_part = d['perpendicular_part']
+        return self

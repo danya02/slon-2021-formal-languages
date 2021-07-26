@@ -79,3 +79,19 @@ class SelfLink:
         distance = math.sqrt(dx*dx + dy*dy) - stuff.circle_radius
         return abs(distance) < config.hit_target_padding
 
+    def save(self):
+        d = {}
+        d['node'] = self.node.id
+        d['anchor_angle'] = self.anchor_angle
+
+    @classmethod
+    def load(cls, d, nodes):
+        mynode = None
+        for node in nodes:
+            if node.id == d['node']:
+                mynode = node
+                break
+
+        self = cls()
+        self.node = mynode
+        self.anchor_angle = d.get('anchor_angle', 0)

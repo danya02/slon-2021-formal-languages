@@ -3,11 +3,13 @@ from node import Node
 from link import Link
 from self_link import SelfLink
 from temp_link import TemporaryLink
+from start_link import StartLink
 from data import Data
 import config
 import random
 import common_utils
 import time
+import yaml
 
 pygame.init()
 display = pygame.display.set_mode( (800, 600) )
@@ -27,6 +29,31 @@ caret_last_update = 0
 
 last_click = 0
 click_count = 0
+
+def load(file):
+    nodes.clear()
+    links.clear()
+    with open(file) as o:
+        data = yaml.safe_load(o)
+        for d in data.get('nodes', []):
+            nodes.append(Node.load(d))
+        for d in data.get('links', []):
+            links.append(Link.load(d, nodes))
+        for d in data.get('self_links', []):
+            links.append(SelfLink.load(d, nodes))
+        for d in data.get('start_links', []):
+            links.append(StartLink.load(d, nodes))
+
+def save(file):
+    with open(file, 'w') as o:
+        d = {}
+        d['nodes'] = [i.save() for i in nodes]
+        d['links'] = [i.save() for i in links if isinstance(i, Link)]
+        d['self_links'] = [i.save() for i in links if isinstance(i, SelfLink)]
+        d['start_links'] = [i.save() for i in links if isinstance(i, StartLink)]
+        yaml.dump(d, o)
+
+
 
 def reset_caret():
     caret_visible = True
@@ -164,6 +191,10 @@ def on_key_down(key, mod, unic):
             if 'text' in selected_object.__dict__:
                 selected_object.text = selected_object.text[:-1]
                 reset_caret()
+    elif key == pygame.K_TAB:
+        save('test.yml')
+    elif key == pygame.K_ESCAPE:
+        load('test.yml')
     else:
         if not (mod & pygame.KMOD_ALT) and not (mod & pygame.KMOD_CTRL) and not (mod & pygame.KMOD_META):
             if selected_object is not None:
