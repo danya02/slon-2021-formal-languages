@@ -1,5 +1,5 @@
 import pygame
-import common_drawing
+import common_utils
 import config
 from data import Data
 
@@ -33,10 +33,10 @@ class StartLink:
 
         # draw the text at the end without the arrow
         text_angle = math.atan2(stuff.startY - stuff.endY, stuff.startX - stuff.EndX)
-        common_drawing.draw_text(surface, self.text, stuff.startX, stuff.startY, textAngle, False)
+        common_utils.draw_text(surface, self.text, stuff.startX, stuff.startY, textAngle, False)
 
         # draw the head of the arrow
-        common_drawing.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(-self.deltaY, self.deltaX)
+        common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(-self.deltaY, self.deltaX)
 
     def contains_point(self, x, y):
         stuff = self.get_end_points()

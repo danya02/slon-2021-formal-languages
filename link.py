@@ -4,6 +4,7 @@ import math
 from data import Data
 import config
 import common_utils
+import random
 
 class Link:
     def __init__(self, a, b):
@@ -20,17 +21,24 @@ class Link:
         dx = self.nodeB.x - self.nodeA.x
         dy = self.nodeB.y - self.nodeA.y
         scale = math.sqrt(dx*dx + dy*dy)
-        return Data(
-            x = self.nodeA.x + dx * self.parallel_part - dy * self.perpendicular_part / scale,
-            y = self.nodeA.y + dy * self.parallel_part - dx * self.perpendicular_part / scale
-        )
+        try:
+            return Data(
+                x = self.nodeA.x + dx * self.parallel_part - dy * self.perpendicular_part / scale,
+                y = self.nodeA.y + dy * self.parallel_part + dx * self.perpendicular_part / scale
+            )
+        except ZeroDivisionError:
+            self.nodeA.x += random.randint(0, 30) - 15
+            self.nodeA.y += random.randint(0, 30) - 15
+            self.nodeB.x += random.randint(0, 30) - 15
+            self.nodeB.y += random.randint(0, 30) - 15
+            return Data(x=0, y=0)
 
     def set_anchor_point(self, x, y):
         dx = self.nodeB.x - self.nodeA.x
         dy = self.nodeB.y - self.nodeA.y
         scale = math.sqrt(dx*dx + dy*dy)
-        self.parallelPart = (dx * (x - self.nodeA.x) + dy * (y - self.nodeA.y)) / (scale * scale)
-        self.perpendicularPart = (dx * (y - self.nodeA.y) - dy * (x - self.nodeA.x)) / scale
+        self.parallel_part = (dx * (x - self.nodeA.x) + dy * (y - self.nodeA.y)) / (scale * scale)
+        self.perpendicular_part = (dx * (y - self.nodeA.y) - dy * (x - self.nodeA.x)) / scale
 
         # snap to a straight line
         if self.parallel_part > 0 and self.parallel_part < 1 and abs(self.perpendicular_part) < config.snap_to_padding:
@@ -46,7 +54,7 @@ class Link:
                 end = self.nodeB.closest_point_on_circle(midX, midY);
                 return Data(
                     has_circle = False,
-                    startX = start.x
+                    startX = start.x,
                     startY = start.y,
                     endX = end.x,
                     endY = end.y
@@ -54,10 +62,10 @@ class Link:
 
         anchor = self.get_anchor_point()
         circle = common_utils.circle_from_three_points(self.nodeA.x, self.nodeA.y, self.nodeB.x, self.nodeB.y, anchor.x, anchor.y)
-        isReversed = (self.perpendicularPart > 0)
-        reverseScale = 1 if is_reversed else -1
-        startAngle = math.atan2(self.nodeA.y - circle.y, self.nodeA.x - circle.x) - reverseScale * nodeRadius / circle.radius
-        endAngle = math.atan2(self.nodeB.y - circle.y, self.nodeB.x - circle.x) + reverseScale * nodeRadius / circle.radius
+        isReversed = (self.perpendicular_part > 0)
+        reverseScale = 1 if isReversed else -1
+        startAngle = math.atan2(self.nodeA.y - circle.y, self.nodeA.x - circle.x) - reverseScale * config.node_radius / circle.radius
+        endAngle = math.atan2(self.nodeB.y - circle.y, self.nodeB.x - circle.x) + reverseScale * config.node_radius / circle.radius
         startX = circle.x + circle.radius * math.cos(startAngle);
         startY = circle.y + circle.radius * math.sin(startAngle);
         endX = circle.x + circle.radius * math.cos(endAngle);
@@ -83,25 +91,28 @@ class Link:
         
         # draw arc
         if stuff.has_circle:
-            r = pygame.Rect(0, 0, stuff.circle_radius // 2, stuff.circle_radius // 2)
-            r.centerx = stuff.centerX
-            r.centery = stuff.centerY
-            pygame.draw.arc(surface, pygame.Color('black'), r, c.start_angle, c.end_angle)
-
+            r = pygame.Rect(0, 0, stuff.circle_radius*2, stuff.circle_radius*2)
+            r.centerx = stuff.circleX
+            r.centery = stuff.circleY
+            a = self.get_anchor_point()
+            sa, ea = stuff.start_angle, stuff.end_angle
+            if not stuff.is_reversed: sa, ea = ea, sa
+            pygame.draw.arc(surface, pygame.Color('black'), r, -sa, -ea)
+            pygame.draw.circle(surface, pygame.Color('red'), (a.x, a.y), 5)
         else:
-            pygame.draw.line( (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
+            pygame.draw.line(surface, pygame.Color('black'), (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
 
         # draw the head of the arrow
         if stuff.has_circle:
-            common_utils.draw_arrow(surface, pygame.Color('black'), stuff.endX, stuff.endY, stuff.endAngle - stuff.reverseScale * (math.pi / 2))
+            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, stuff.end_angle - stuff.reverse_scale * (math.pi / 2))
         else:
-            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(stuff.endy - stuff.startY, stuff.endX - stuff.startX))
+            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(stuff.endY - stuff.startY, stuff.endX - stuff.startX))
 
         # draw the text
         if stuff.has_circle:
             startAngle = stuff.start_angle
             endAngle = stuff.end_angle
-            if endAngle < startAngle:
+            if endAngle > startAngle:
                 endAngle += math.pi * 2
 
             textAngle = (startAngle + endAngle) / 2 + stuff.is_reversed * math.pi

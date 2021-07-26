@@ -2,6 +2,7 @@ import pygame
 import math
 from data import Data
 import common_utils
+import config
 
 class SelfLink:
     def __init__(self, node, mouse=None):
@@ -15,9 +16,13 @@ class SelfLink:
     def set_mouse_start(self, x, y):
         self.mouse_offset_angle = self.anchor_angle - math.atan2(y - self.node.y, x - self.node.x) + self.mouse_offset_angle
 
+
+    def set_anchor_point(self, x, y):
+        self.anchor_angle = math.atan2(y - self.node.y, x - self.node.x)
+
         # snap to 90 degres
-        snap = math.round(self.anchor_angle / (math.pi / 2)) * (math.pi / 2)
-        if abs(self.anchor_angle - snap) < 0.1): self.anchor_angle = snap
+        snap = round(self.anchor_angle / (math.pi / 2)) * (math.pi / 2)
+        if abs(self.anchor_angle - snap) < 0.1: self.anchor_angle = snap
 
         # keep in the range -pi to pi so our contains_point() function always works
         if self.anchor_angle < -math.pi: self.anchor_angle += 2*math.pi
@@ -51,13 +56,15 @@ class SelfLink:
         
         # draw arc
         r = pygame.Rect(0, 0, stuff.circle_radius*2, stuff.circle_radius*2)
-        r.centerx = stuff.centerX
-        r.centery = stuff.centerY
-        pygame.draw.arc(surface, pygame.Color('black'), r, self.start_angle, self.end_angle)
+        r.centerx = stuff.circleX
+        r.centery = stuff.circleY
+        sa, ea = stuff.start_angle, stuff.end_angle
+        sa, ea = ea, sa
+        pygame.draw.arc(surface, pygame.Color('black'), r, -sa, -ea)
 
         # draw the text on the loop farthest from the node
-        textX = stuff.circleX + stuff.circle_radius * math.cos(self.anchorAngle);
-        textY = stuff.circleY + stuff.circle_radius * math.sin(self.anchorAngle);
+        textX = stuff.circleX + stuff.circle_radius * math.cos(self.anchor_angle);
+        textY = stuff.circleY + stuff.circle_radius * math.sin(self.anchor_angle);
         common_utils.draw_text(surface, self.text, textX, textY, self.anchor_angle, False)
 
         # draw the head of the arrow
