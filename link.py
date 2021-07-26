@@ -87,7 +87,7 @@ class Link:
         )
 
     def draw(self, surface, selected_object, caret_visible=None, **kwargs):
-        c = common_utils.get_color(self, selected_object)
+        c = common_utils.get_color(self, selected_object, **kwargs)
         stuff = self.get_end_points_and_circle()
         
         # draw arc
@@ -145,7 +145,7 @@ class Link:
                 elif angle > endAngle:
                     angle -= math.pi * 2
                 
-                return startAngle < angle < endAngle
+                return angle < endAngle and angle > startAngle
         else:
             dx = stuff.endX - stuff.startX
             dy = stuff.endY - stuff.startY

@@ -82,7 +82,6 @@ def on_mouse_down(x,y):
     else:
         click_count = 0
 
-    print(selected_object)
     if selected_object is not None:
         if shift and isinstance(selected_object, Node):
             current_link = SelfLink(selected_object, mouse)

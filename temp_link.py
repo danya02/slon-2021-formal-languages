@@ -8,7 +8,7 @@ class TemporaryLink:
         self.to = to
 
     def draw(self, surface, selected_object, **kwargs):
-        c = common_utils.get_color(self, selected_object)
+        c = common_utils.get_color(self, selected_object, **kwargs)
 
         # draw the line
         pygame.draw.line(surface, c,  (self.from_.x, self.from_.y), (self.to.x, self.to.y) )

@@ -20,6 +20,14 @@ class StartLink:
         if abs(self.deltaX) < config.snap_to_padding: self.deltaX = 0
         if abs(self.deltaY) < config.snap_to_padding: self.deltaY = 0
 
+    @property
+    def nodeA(self):
+        return None  # for compatibility with normal links
+
+    @property
+    def nodeB(self):
+        return self.node  # for compatibility with normal links
+
     def get_end_points(self):
         startX = self.node.x + self.deltaX
         startY = self.node.y + self.deltaY
@@ -27,7 +35,7 @@ class StartLink:
         return Data(startX=startX, startY=startY, endX=end.x, endY=end.y)
 
     def draw(self, surface, selected_object, caret_visible=None, **kwargs):
-        c = common_utils.get_color(self, selected_object)
+        c = common_utils.get_color(self, selected_object, **kwargs)
         stuff = self.get_end_points()
 
         # draw the line

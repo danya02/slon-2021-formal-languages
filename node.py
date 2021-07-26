@@ -25,7 +25,7 @@ class Node:
         self.y = y + self.mouse_offset_y
 
     def draw(self, surface, selected_object, caret_visible=None, **kwargs):
-        c = common_utils.get_color(self, selected_object)
+        c = common_utils.get_color(self, selected_object, **kwargs)
         # draw the circle
         pygame.draw.circle(surface, c, (self.x, self.y), config.node_radius, 1)
 

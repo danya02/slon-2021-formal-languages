@@ -13,6 +13,14 @@ class SelfLink:
         if mouse:
             self.set_anchor_point(mouse.x, mouse.y)
 
+    @property
+    def nodeA(self):
+        return self.node  # for compatibility with normal links
+    
+    @property
+    def nodeB(self):
+        return self.node  # for compatibility with normal links
+
     def set_mouse_start(self, x, y):
         self.mouse_offset_angle = self.anchor_angle - math.atan2(y - self.node.y, x - self.node.x) + self.mouse_offset_angle
 
@@ -52,7 +60,7 @@ class SelfLink:
         )
 
     def draw(self, surface, selected_object, caret_visible=None, **kwargs):
-        c = common_utils.get_color(self, selected_object)
+        c = common_utils.get_color(self, selected_object, **kwargs)
 
         stuff = self.get_end_points_and_circle()
         

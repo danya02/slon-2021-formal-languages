@@ -2,6 +2,9 @@ import pygame
 from data import Data
 import math
 import config
+import hashlib
+import random
+import colorlib
 
 def det(a,b,c,d,e,f,g,h,i):
     return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g
@@ -61,6 +64,21 @@ def select_object(x, y, *object_lists):
                 return obj
     return None
 
-def get_color(self, selected):
+def color_from_hash(name):
+    name = bytes(name, 'utf8')
+    h = hashlib.md5(name).hexdigest()
+    hi = int(h, 16)
+    random.seed(hi)
+    hue = random.random()
+    saturation = random.random()
+    saturation = (saturation/2) + 0.5
+    r,g,b = colorlib.hsv_to_rgb(hue, saturation, 1)
+    r,g,b = map(lambda x: int(x*255), (r,g,b))
+    return pygame.Color(r,g,b)
+
+
+def get_color(self, selected, node_cursors=[], link_cursors=[], **kwargs):
+    cursors = [i[0] for i in node_cursors+link_cursors]
+    # TODO: use color_from_hash to color nodes and links
     if self is selected: return pygame.Color('blue')
     return pygame.Color('black')
