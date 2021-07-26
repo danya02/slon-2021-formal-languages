@@ -25,18 +25,19 @@ class StartLink:
         end = self.node.closest_point_on_circle(startX, startY)
         return Data(startX=startX, startY=startY, endX=endX, endY=endY)
 
-    def draw(self, surface):
+    def draw(self, surface, selected_object, caret_visible=None, **kwargs):
+        c = common_utils.get_color(self, selected_object)
         stuff = self.get_end_points()
 
         # draw the line
-        pygame.draw.line( (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
+        pygame.draw.line( surface, c, (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
 
         # draw the text at the end without the arrow
         text_angle = math.atan2(stuff.startY - stuff.endY, stuff.startX - stuff.EndX)
-        common_utils.draw_text(surface, self.text, stuff.startX, stuff.startY, textAngle, False)
+        common_utils.draw_text(surface, self.text, stuff.startX, stuff.startY, textAngle, c, caret_visible)
 
         # draw the head of the arrow
-        common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(-self.deltaY, self.deltaX)
+        common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(-self.deltaY, self.deltaX), c)
 
     def contains_point(self, x, y):
         stuff = self.get_end_points()

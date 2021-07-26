@@ -20,16 +20,17 @@ moving_object = False
 clock = pygame.time.Clock()
 
 shift = False
-
-#links[1].set_anchor_point(random.randint(0, 800), random.randint(0, 600))
-
-links[1].set_anchor_point(200, 300)
 original_click = None
+
+caret_visible = False
+caret_last_update = 0
 
 last_click = 0
 click_count = 0
 
-def reset_caret(): pass
+def reset_caret():
+    caret_visible = True
+    caret_last_update = time.time()
 
 def on_mouse_down(x,y):
     global original_click
@@ -129,12 +130,47 @@ def on_key_down(key, mod):
     else:
         shift = False
 
-def on_key_down(key, mod):
+def on_key_down(key, mod, unic):
     global shift
+    global selected_object
     if mod & pygame.KMOD_SHIFT:
         shift = True
     else:
         shift = False
+
+    if key == pygame.K_DELETE:
+        if selected_object is not None:
+            try:
+                nodes.remove(selected_object)
+            except ValueError: pass
+            to_remove_link = None
+            to_del = []
+            for l in links:
+                ns = []
+                try: ns.append(l.node)
+                except: pass
+                try: ns.append(l.nodeA)
+                except: pass
+                try: ns.append(l.nodeB)
+                except: pass
+
+                if l is selected_object or selected_object in ns:
+                    to_del.append(l)
+            for l in to_del: links.remove(l)
+            selected_object = None
+
+    elif key == pygame.K_BACKSPACE:
+        if selected_object is not None:
+            if 'text' in selected_object.__dict__:
+                selected_object.text = selected_object.text[:-1]
+                reset_caret()
+    else:
+        if not (mod & pygame.KMOD_ALT) and not (mod & pygame.KMOD_CTRL) and not (mod & pygame.KMOD_META):
+            if selected_object is not None:
+                if 'text' in selected_object.__dict__:
+                    selected_object.text += unic
+                    reset_caret()
+
 
 def on_key_up(key, mod):
     global shift
@@ -146,16 +182,19 @@ def on_key_up(key, mod):
 while 1:
     display.fill(pygame.Color('grey'))
     for n in nodes:
-        n.draw(display)
+        n.draw(display, selected_object, caret_visible=caret_visible and selected_object is n)
     for l in links:
-        l.draw(display)
+        l.draw(display, selected_object, caret_visible=caret_visible and selected_object is l)
     if current_link != None:
-        current_link.draw(display)
+        current_link.draw(display, selected_object, caret_visible=caret_visible)
     pygame.display.update()
-    nodes[2].x += random.randint(0, 2) - 1
-    nodes[2].y += random.randint(0, 2) - 1
+#    nodes[2].x += random.randint(0, 2) - 1
+#    nodes[2].y += random.randint(0, 2) - 1
 
     clock.tick(60)
+    if time.time() - caret_last_update > 0.5:
+        caret_last_update = time.time()
+        caret_visible = not caret_visible
 
     for ev in pygame.event.get():
         if ev.type == pygame.QUIT:
@@ -167,6 +206,6 @@ while 1:
         elif ev.type == pygame.MOUSEBUTTONUP:
             on_mouse_up(*ev.pos)
         elif ev.type == pygame.KEYDOWN:
-            on_key_down(ev.key, ev.mod)
+            on_key_down(ev.key, ev.mod, ev.unicode)
         elif ev.type == pygame.KEYUP:
             on_key_up(ev.key, ev.mod)

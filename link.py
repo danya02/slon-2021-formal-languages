@@ -86,7 +86,8 @@ class Link:
             is_reversed = isReversed
         )
 
-    def draw(self, surface):
+    def draw(self, surface, selected_object, caret_visible=None, **kwargs):
+        c = common_utils.get_color(self, selected_object)
         stuff = self.get_end_points_and_circle()
         
         # draw arc
@@ -97,33 +98,33 @@ class Link:
             a = self.get_anchor_point()
             sa, ea = stuff.start_angle, stuff.end_angle
             if not stuff.is_reversed: sa, ea = ea, sa
-            pygame.draw.arc(surface, pygame.Color('black'), r, -sa, -ea)
-            pygame.draw.circle(surface, pygame.Color('red'), (a.x, a.y), 5)
+            pygame.draw.arc(surface, c, r, -sa, -ea)
+#            pygame.draw.circle(surface, pygame.Color('red'), (a.x, a.y), 5)
         else:
-            pygame.draw.line(surface, pygame.Color('black'), (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
+            pygame.draw.line(surface, c, (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
 
         # draw the head of the arrow
         if stuff.has_circle:
-            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, stuff.end_angle - stuff.reverse_scale * (math.pi / 2))
+            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, stuff.end_angle - stuff.reverse_scale * (math.pi / 2), c)
         else:
-            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(stuff.endY - stuff.startY, stuff.endX - stuff.startX))
+            common_utils.draw_arrow(surface, stuff.endX, stuff.endY, math.atan2(stuff.endY - stuff.startY, stuff.endX - stuff.startX), c)
 
         # draw the text
         if stuff.has_circle:
-            startAngle = stuff.start_angle
-            endAngle = stuff.end_angle
+            startAngle = -stuff.start_angle
+            endAngle = -stuff.end_angle
             if endAngle > startAngle:
                 endAngle += math.pi * 2
 
             textAngle = (startAngle + endAngle) / 2 + stuff.is_reversed * math.pi
-            textX = stuff.circleX + stuff.circle_radius * math.cos(textAngle)
-            textY = stuff.circleY + stuff.circle_radius * math.sin(textAngle)
-            common_utils.draw_text(surface, self.text, textX, textY, textAngle, False)
+            textX = stuff.circleX + stuff.circle_radius * math.cos(-textAngle)
+            textY = stuff.circleY + stuff.circle_radius * math.sin(-textAngle)
+            common_utils.draw_text(surface, self.text, textX, textY, -textAngle, c, caret_visible)
         else:
             textX = (stuff.startX + stuff.endX) / 2
             textY = (stuff.startY + stuff.endY) / 2
             textAngle = math.atan2(stuff.endX - stuff.startX, stuff.startY - stuff.endY)
-            common_utils.draw_text(surface, self.text, textX, textY, textAngle + self.line_angle_adjust, False)
+            common_utils.draw_text(surface, self.text, textX, textY, textAngle + self.line_angle_adjust, c, caret_visible)
 
 
     def contains_point(self, x, y):

@@ -2,6 +2,7 @@ import pygame
 import math
 import config
 import common_utils
+import config
 from data import Data
 
 class Node:
@@ -21,16 +22,17 @@ class Node:
         self.x = x + self.mouse_offset_x
         self.y = y + self.mouse_offset_y
 
-    def draw(self, surface):
+    def draw(self, surface, selected_object, caret_visible=None, **kwargs):
+        c = common_utils.get_color(self, selected_object)
         # draw the circle
-        pygame.draw.circle(surface, pygame.Color('black'), (self.x, self.y), config.node_radius, 1)
+        pygame.draw.circle(surface, c, (self.x, self.y), config.node_radius, 1)
 
         # draw the text
-        common_utils.draw_text(surface, self.text, self.x, self.y, None, False)
+        common_utils.draw_text(surface, self.text, self.x, self.y, None, c, caret_visible)
 
         # draw a double circle for the accept state
         if self.is_accept_state:
-            pygame.draw.circle(surface, pygame.Color('black'), (self.x, self.y), config.node_radius - 6, 1)
+            pygame.draw.circle(surface, c, (self.x, self.y), config.node_radius - 6, 1)
 
         
     def closest_point_on_circle(self, x, y):

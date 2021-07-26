@@ -18,24 +18,23 @@ def circle_from_three_points(x1, y1, x2, y2, x3, y3):
         radius = math.sqrt(bx*bx + by*by - 4*a*c) / (2 * abs(a))
     )
 
-def draw_arrow(surface, x, y, angle):
+def draw_arrow(surface, x, y, angle, color=pygame.Color('black')):
     dx = math.cos(angle)
     dy = math.sin(angle)
     polygon = [ (x, y), (x - 8 * dx + 5 * dy, y - 8 * dy - 5 * dx), (x - 8 * dx - 5 * dy, y - 8 * dy + 5 * dx) ]
-    pygame.draw.polygon(surface, pygame.Color('black'), polygon)
+    pygame.draw.polygon(surface, color, polygon)
 
 font = None
 
-def draw_text(surface, original_text, x, y, angle=None, selected=False):
+def draw_text(surface, original_text, x, y, angle=None, color=pygame.Color('black'), caret_visible=None):
     global font
     if font is None:
-        font = pygame.font.get_fonts()[0]
-        font = pygame.font.SysFont(font, 20)
-    surf = font.render(original_text, True, pygame.Color('black'))
+        font = pygame.font.SysFont('Arial', 20)
+    surf = font.render(original_text, True, color)
     r = surf.get_rect()
-    r.x = x
-    r.y = y
-    r.x -= r.width // 2
+    r.centerx = x
+    r.centery = y
+    #r.x -= r.width // 2
     if angle is not None:
         cos = math.cos(angle)
         sin = math.sin(angle)
@@ -45,6 +44,9 @@ def draw_text(surface, original_text, x, y, angle=None, selected=False):
         r.x += cpx - sin * slide
         r.y += cpy + cos * slide
     surface.blit(surf, r)
+    if caret_visible:
+        pygame.draw.line(surface, color, (r.right, r.bottom), (r.right, r.top), 3)
+
 
 def snap_node(node, nodes):
     for i in nodes:
@@ -59,3 +61,6 @@ def select_object(x, y, *object_lists):
                 return obj
     return None
 
+def get_color(self, selected):
+    if self is selected: return pygame.Color('blue')
+    return pygame.Color('black')

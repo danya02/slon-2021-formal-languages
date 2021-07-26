@@ -51,7 +51,9 @@ class SelfLink:
             circle_radius = circleRadius
         )
 
-    def draw(self, surface):
+    def draw(self, surface, selected_object, caret_visible=None, **kwargs):
+        c = common_utils.get_color(self, selected_object)
+
         stuff = self.get_end_points_and_circle()
         
         # draw arc
@@ -60,15 +62,15 @@ class SelfLink:
         r.centery = stuff.circleY
         sa, ea = stuff.start_angle, stuff.end_angle
         sa, ea = ea, sa
-        pygame.draw.arc(surface, pygame.Color('black'), r, -sa, -ea)
+        pygame.draw.arc(surface, c, r, -sa, -ea)
 
         # draw the text on the loop farthest from the node
         textX = stuff.circleX + stuff.circle_radius * math.cos(self.anchor_angle);
         textY = stuff.circleY + stuff.circle_radius * math.sin(self.anchor_angle);
-        common_utils.draw_text(surface, self.text, textX, textY, self.anchor_angle, False)
+        common_utils.draw_text(surface, self.text, textX, textY, self.anchor_angle, c, caret_visible)
 
         # draw the head of the arrow
-        common_utils.draw_arrow(surface, stuff.endX, stuff.endY, stuff.end_angle + math.pi * 0.4)
+        common_utils.draw_arrow(surface, stuff.endX, stuff.endY, stuff.end_angle + math.pi * 0.4, c)
 
     def contains_point(self, x, y):
         stuff = self.get_end_points_and_circle()
