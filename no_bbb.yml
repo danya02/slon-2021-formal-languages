@@ -1,0 +1,59 @@
+links:
+- line_angle_adjust: 3.141592653589793
+  nodeA: relaxed_heyrovsky
+  nodeB: determined_albattani
+  text: b
+- nodeA: determined_albattani
+  nodeB: epic_jackson
+  text: b
+- nodeA: epic_jackson
+  nodeB: gallant_jones
+  text: b
+- nodeA: epic_jackson
+  nodeB: relaxed_heyrovsky
+  parallel_part: 0.8594377510040161
+  perpendicular_part: 63.0
+  text: a
+- nodeA: determined_albattani
+  nodeB: relaxed_heyrovsky
+  parallel_part: 0.7064220183486238
+  perpendicular_part: -93.0
+  text: a
+nodes:
+- accept: true
+  id: relaxed_heyrovsky
+  x: 343
+  y: 440
+- accept: true
+  id: determined_albattani
+  x: 343
+  y: 331
+- accept: true
+  id: epic_jackson
+  x: 343
+  y: 191
+- id: gallant_jones
+  x: 343
+  y: 69
+self_links:
+- anchor_angle: 1.5707963267948966
+  node: relaxed_heyrovsky
+  text: a
+- anchor_angle: 0.0
+  node: gallant_jones
+  text: b
+- anchor_angle: -3.141592653589793
+  node: gallant_jones
+  text: a
+start_links:
+- dx: -194
+  dy: 0
+  node: relaxed_heyrovsky
+test_cases:
+ - aaabababbab
+ - bbabbbabaabab
+ - abababababbabba
+ - abbab
+ - baba
+ - abba
+ - baabaabbb
