@@ -4,7 +4,7 @@ import math
 import config
 import hashlib
 import random
-import colorlib
+import colorsys
 
 def det(a,b,c,d,e,f,g,h,i):
     return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g
@@ -72,7 +72,7 @@ def color_from_hash(name):
     hue = random.random()
     saturation = random.random()
     saturation = (saturation/2) + 0.5
-    r,g,b = colorlib.hsv_to_rgb(hue, saturation, 1)
+    r,g,b = colorsys.hsv_to_rgb(hue, saturation, 1)
     r,g,b = map(lambda x: int(x*255), (r,g,b))
     return pygame.Color(r,g,b)
 
