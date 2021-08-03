@@ -72,7 +72,7 @@ class StartLink:
     def load(cls, d, nodes):
         mynode = None
         for node in nodes:
-            if node.id == d['id']:
+            if node.id == d['node']:
                 mynode = node
                 break
 

@@ -5,7 +5,7 @@ import common_utils
 import config
 
 class SelfLink:
-    def __init__(self, node, mouse=None):
+    def __init__(self, node=None, mouse=None):
         self.node = node
         self.anchor_angle = 0
         self.mouse_offset_angle = 0
@@ -70,7 +70,7 @@ class SelfLink:
         r.centery = stuff.circleY
         sa, ea = stuff.start_angle, stuff.end_angle
         sa, ea = ea, sa
-        pygame.draw.arc(surface, c, r, -sa, -ea)
+        pygame.draw.arc(surface, c, r, -sa, -ea, 3)
 
         # draw the text on the loop farthest from the node
         textX = stuff.circleX + stuff.circle_radius * math.cos(self.anchor_angle);
@@ -91,6 +91,9 @@ class SelfLink:
         d = {}
         d['node'] = self.node.id
         d['anchor_angle'] = self.anchor_angle
+        if self.text:
+            d['text'] = self.text
+        return d
 
     @classmethod
     def load(cls, d, nodes):
@@ -102,4 +105,6 @@ class SelfLink:
 
         self = cls()
         self.node = mynode
+        self.text = d.get('text', '')
         self.anchor_angle = d.get('anchor_angle', 0)
+        return self

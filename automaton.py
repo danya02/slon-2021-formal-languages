@@ -10,6 +10,8 @@ class Automaton:
                 self.link_cursors.append((l, 0))
         self.selected_links = True
         self.string = string
+        self.steps = 0
+        print('init', string)
 
         # visualization has 2 steps:
         # 1. standing at a node, choosing links
@@ -18,10 +20,14 @@ class Automaton:
         # then traversing them to reach the start nodes.
     
     def step(self):
+        self.steps += 1
+        print(self.steps, self.selected_links)
         if self.selected_links:
             self.put_cursors_at_nodes()
         else:
             self.select_links_to_traverse()
+
+        self.selected_links = not self.selected_links
 
 
     def put_cursors_at_nodes(self):
@@ -42,5 +48,5 @@ class Automaton:
 
         self.link_cursors.clear()
         for l, word_pos in outgoing_links:
-            if self.string[word_pos:].starts_with(l.text):
+            if self.string[word_pos:].startswith(l.text):
                 self.link_cursors.append( (l, word_pos + len(l.text)) )

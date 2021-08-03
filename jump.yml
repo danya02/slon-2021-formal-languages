@@ -1,0 +1,58 @@
+links:
+- line_angle_adjust: 3.141592653589793
+  nodeA: laughing_maxwell
+  nodeB: thirsty_lehmann
+  text: a
+- nodeA: thirsty_lehmann
+  nodeB: exciting_nightingale
+  text: b
+- nodeA: exciting_nightingale
+  nodeB: practical_lovelace
+  text: c
+- nodeA: practical_lovelace
+  nodeB: inspiring_lumiere
+  text: d
+- nodeA: laughing_maxwell
+  nodeB: goofy_mccarthy
+  parallel_part: 0.771486516114887
+  perpendicular_part: 48.81207110401805
+  text: abc
+- nodeA: goofy_mccarthy
+  nodeB: thirsty_lehmann
+- nodeA: goofy_mccarthy
+  nodeB: exciting_nightingale
+- nodeA: goofy_mccarthy
+  nodeB: practical_lovelace
+- nodeA: goofy_mccarthy
+  nodeB: inspiring_lumiere
+nodes:
+- id: laughing_maxwell
+  x: 90
+  y: 282
+- id: thirsty_lehmann
+  x: 228
+  y: 172
+- id: exciting_nightingale
+  x: 350
+  y: 172
+- id: practical_lovelace
+  x: 470
+  y: 172
+- accept: true
+  id: inspiring_lumiere
+  x: 610
+  y: 172
+- id: goofy_mccarthy
+  x: 470
+  y: 379
+self_links: []
+start_links:
+- dx: -50
+  dy: 0
+  node: laughing_maxwell
+test_cases:
+- abcd
+- abcbcd
+- abccd
+- abcabc
+- aaa

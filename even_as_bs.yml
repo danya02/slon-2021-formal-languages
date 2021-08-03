@@ -1,0 +1,82 @@
+links:
+- line_angle_adjust: 3.141592653589793
+  nodeA: intelligent_hopper
+  nodeB: determined_stonebraker
+  parallel_part: 0.4827586206896552
+  perpendicular_part: -42.0
+  text: a
+- line_angle_adjust: 3.141592653589793
+  nodeA: determined_stonebraker
+  nodeB: intelligent_hopper
+  parallel_part: 0.5670498084291188
+  perpendicular_part: -34.0
+  text: a
+- nodeA: elegant_moser
+  nodeB: determined_stonebraker
+  parallel_part: 0.5619047619047619
+  perpendicular_part: 35.0
+  text: b
+- nodeA: determined_stonebraker
+  nodeB: elegant_moser
+  parallel_part: 0.6904761904761905
+  perpendicular_part: 33.0
+  text: b
+- line_angle_adjust: 3.141592653589793
+  nodeA: amazing_hoover
+  nodeB: intelligent_hopper
+  parallel_part: 0.23938223938223938
+  perpendicular_part: -35.0
+  text: b
+- line_angle_adjust: 3.141592653589793
+  nodeA: intelligent_hopper
+  nodeB: amazing_hoover
+  parallel_part: 0.7374517374517374
+  perpendicular_part: -43.0
+  text: b
+- line_angle_adjust: 3.141592653589793
+  nodeA: amazing_hoover
+  nodeB: elegant_moser
+  parallel_part: 0.6896551724137931
+  perpendicular_part: -39.0
+  text: a
+- line_angle_adjust: 3.141592653589793
+  nodeA: elegant_moser
+  nodeB: amazing_hoover
+  parallel_part: 0.5593869731800766
+  perpendicular_part: -38.0
+  text: a
+nodes:
+- accept: true
+  id: intelligent_hopper
+  text: 0,0
+  x: 205
+  y: 158
+- id: determined_stonebraker
+  text: 0,1
+  x: 466
+  y: 158
+- id: elegant_moser
+  text: 1,1
+  x: 466
+  y: 417
+- id: amazing_hoover
+  text: 1,0
+  x: 205
+  y: 417
+self_links: []
+start_links:
+- dx: -130
+  dy: 0
+  node: intelligent_hopper
+test_cases:
+- ab
+- aa
+- bb
+- aabb
+- abab
+- abba
+- aaab
+- abababababababab
+- abbababa
+- bbababaa
+- aaababbb

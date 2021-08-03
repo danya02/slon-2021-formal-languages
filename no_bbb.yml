@@ -57,3 +57,10 @@ test_cases:
  - baba
  - abba
  - baabaabbb
+ - ababbab
+ - babbab
+ - baaaaa
+ - abbabbabbabb
+ - ababa
+ - aaaaa
+ - bbbabab

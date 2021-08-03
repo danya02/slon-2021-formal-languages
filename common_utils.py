@@ -1,10 +1,11 @@
 import pygame
 from data import Data
+from node import Node
 import math
 import config
 import hashlib
 import random
-import colorlib
+import colorsys
 
 def det(a,b,c,d,e,f,g,h,i):
     return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g
@@ -68,17 +69,22 @@ def color_from_hash(name):
     name = bytes(name, 'utf8')
     h = hashlib.md5(name).hexdigest()
     hi = int(h, 16)
-    random.seed(hi)
-    hue = random.random()
-    saturation = random.random()
+    r = random.Random(hi)
+    hue = r.random()
+    saturation = r.random()
     saturation = (saturation/2) + 0.5
-    r,g,b = colorlib.hsv_to_rgb(hue, saturation, 1)
+    r,g,b = colorsys.hsv_to_rgb(hue, saturation, 1)
     r,g,b = map(lambda x: int(x*255), (r,g,b))
     return pygame.Color(r,g,b)
 
 
 def get_color(self, selected, node_cursors=[], link_cursors=[], **kwargs):
     cursors = [i[0] for i in node_cursors+link_cursors]
-    # TODO: use color_from_hash to color nodes and links
+    if self in cursors:
+        if isinstance(self, Node):
+            return color_from_hash(self.id)
+        else:
+            return color_from_hash(self.nodeB.id)
+
     if self is selected: return pygame.Color('blue')
-    return pygame.Color('black')
+    return pygame.Color('white')

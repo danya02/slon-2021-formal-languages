@@ -1,5 +1,4 @@
 import pygame
-import node
 import math
 from data import Data
 import config
@@ -98,10 +97,10 @@ class Link:
             a = self.get_anchor_point()
             sa, ea = stuff.start_angle, stuff.end_angle
             if not stuff.is_reversed: sa, ea = ea, sa
-            pygame.draw.arc(surface, c, r, -sa, -ea)
+            pygame.draw.arc(surface, c, r, -sa, -ea, 3)
 #            pygame.draw.circle(surface, pygame.Color('red'), (a.x, a.y), 5)
         else:
-            pygame.draw.line(surface, c, (stuff.startX, stuff.startY), (stuff.endX, stuff.endY) )
+            pygame.draw.line(surface, c, (stuff.startX, stuff.startY), (stuff.endX, stuff.endY), 3 )
 
         # draw the head of the arrow
         if stuff.has_circle:

@@ -1,21 +1,29 @@
 import pygame
-from node import Node
 from link import Link
 from self_link import SelfLink
 from temp_link import TemporaryLink
 from start_link import StartLink
+from automaton import Automaton
 from data import Data
 import config
 import random
 import common_utils
+Node = common_utils.Node
 import time
 import yaml
 
+DEMO_MODE = 1
+DEMO_FILES = ['no_bbb.yml', 'even_as_bs.yml', 'branch.yml', 'jump.yml', 'contrib_1.yml']
+remaining_files = DEMO_FILES[:]
+random.shuffle(remaining_files)
+
 pygame.init()
-display = pygame.display.set_mode( (800, 600) )
+display = pygame.display.set_mode( (800, 600) , flags=pygame.RESIZABLE)
 
 nodes = [Node(50, 50), Node(100, 200), Node(200, 200)]
 links = [Link(nodes[0], nodes[1]), Link(nodes[1], nodes[2])]
+test_cases = []
+
 current_link = None
 selected_object = None
 moving_object = False
@@ -30,9 +38,15 @@ caret_last_update = 0
 last_click = 0
 click_count = 0
 
+auto_frames_per_step = 60
+
+automaton = None
+
 def load(file):
+    global automaton
     nodes.clear()
     links.clear()
+    test_cases.clear()
     with open(file) as o:
         data = yaml.safe_load(o)
         for d in data.get('nodes', []):
@@ -43,6 +57,10 @@ def load(file):
             links.append(SelfLink.load(d, nodes))
         for d in data.get('start_links', []):
             links.append(StartLink.load(d, nodes))
+        for d in data.get('test_cases', []):
+            test_cases.append(d)
+    if test_cases:
+        automaton = Automaton(nodes, links, random.choice(test_cases))
 
 def save(file):
     with open(file, 'w') as o:
@@ -209,14 +227,63 @@ def on_key_up(key, mod):
     else:
         shift = False
 
+
+def advance_automaton():
+    global auto_frames_per_step
+    automaton.step()
+
+    if auto_frames_per_step == 0:
+        automaton.node_cursors.clear()
+        automaton.link_cursors.clear()
+
+    if automaton.steps > 45 * (60 / auto_frames_per_step):
+        automaton.steps = 0
+        auto_steps_per_frame //= 2
+    if auto_frames_per_step < 1:
+        auto_frames_per_step = 0
+
+frames_without_auto_advance = 0
+big_font = pygame.font.SysFont('Arial', 50)
+
+if DEMO_MODE:
+    load(random.choice(DEMO_FILES))
+
+paused = False
+
+def reload_auto():
+    global remaining_files
+    time.sleep(0.2)
+    display.fill('black')
+    pygame.display.update()
+    time.sleep(0.2)
+    load(remaining_files[0])
+    remaining_files = remaining_files[1:]
+    if len(remaining_files) == 0:
+        remaining_files = DEMO_FILES[:]
+        random.shuffle(remaining_files)
+
+
 while 1:
-    display.fill(pygame.Color('grey'))
+    display.fill(pygame.Color('black'))
+    if automaton:
+        nc = automaton.node_cursors
+        lc = automaton.link_cursors
+    else:
+        nc = []
+        lc = []
     for n in nodes:
-        n.draw(display, selected_object, caret_visible=caret_visible and selected_object is n)
+        n.draw(display, selected_object, caret_visible=caret_visible and selected_object is n, node_cursors=nc, link_cursors=lc)
     for l in links:
-        l.draw(display, selected_object, caret_visible=caret_visible and selected_object is l)
+        l.draw(display, selected_object, caret_visible=caret_visible and selected_object is l, node_cursors=nc, link_cursors=lc)
     if current_link != None:
-        current_link.draw(display, selected_object, caret_visible=caret_visible)
+        current_link.draw(display, selected_object, caret_visible=caret_visible, node_cursors=nc, link_cursors=lc)
+    if automaton != None:
+        full_string = big_font.render(automaton.string, True, pygame.Color('white'))
+        for n, w in automaton.node_cursors:
+            display.blit(big_font.render(automaton.string[:w]+'_', False, common_utils.get_color(n, None, node_cursors=automaton.node_cursors, link_cursors=automaton.link_cursors)), (0, 0))
+#        for l, w in automaton.link_cursors:
+#            display.blit(big_font.render(automaton.string[:w]+'_', False, common_utils.get_color(l, None, node_cursors=automaton.node_cursors, link_cursors=automaton.link_cursors)), (0, 0))
+        display.blit(full_string, (0, 0))
     pygame.display.update()
 #    nodes[2].x += random.randint(0, 2) - 1
 #    nodes[2].y += random.randint(0, 2) - 1
@@ -226,16 +293,32 @@ while 1:
         caret_last_update = time.time()
         caret_visible = not caret_visible
 
+
+    if DEMO_MODE and not paused:
+        frames_without_auto_advance += 1
+        if frames_without_auto_advance > auto_frames_per_step:
+            frames_without_auto_advance = 0
+            advance_automaton()
+
+        if not automaton.node_cursors and not automaton.link_cursors:
+            reload_auto()
+
     for ev in pygame.event.get():
         if ev.type == pygame.QUIT:
             raise SystemExit
-        elif ev.type == pygame.MOUSEBUTTONDOWN:
-            on_mouse_down(*ev.pos)
-        elif ev.type == pygame.MOUSEMOTION:
-            on_mouse_move(*ev.pos)
-        elif ev.type == pygame.MOUSEBUTTONUP:
-            on_mouse_up(*ev.pos)
-        elif ev.type == pygame.KEYDOWN:
-            on_key_down(ev.key, ev.mod, ev.unicode)
-        elif ev.type == pygame.KEYUP:
-            on_key_up(ev.key, ev.mod)
+        if not DEMO_MODE:
+            if ev.type == pygame.MOUSEBUTTONDOWN:
+                on_mouse_down(*ev.pos)
+            elif ev.type == pygame.MOUSEMOTION:
+                on_mouse_move(*ev.pos)
+            elif ev.type == pygame.MOUSEBUTTONUP:
+                on_mouse_up(*ev.pos)
+            elif ev.type == pygame.KEYDOWN:
+                on_key_down(ev.key, ev.mod, ev.unicode)
+            elif ev.type == pygame.KEYUP:
+                on_key_up(ev.key, ev.mod)
+        else:
+            if ev.type == pygame.KEYDOWN: paused = True
+            elif ev.type == pygame.KEYUP: paused = False
+            elif ev.type == pygame.MOUSEBUTTONDOWN:
+                reload_auto()

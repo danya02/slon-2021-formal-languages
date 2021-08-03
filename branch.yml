@@ -1,0 +1,50 @@
+links:
+- nodeA: gracious_hellman
+  nodeB: flamboyant_morse
+  text: a
+- nodeA: gracious_hellman
+  nodeB: distracted_visvesvaraya
+  text: a
+- nodeA: flamboyant_morse
+  nodeB: kind_jemison
+  text: b
+- nodeA: distracted_visvesvaraya
+  nodeB: blissful_noether
+  text: c
+- nodeA: kind_jemison
+  nodeB: unruffled_haslett
+  text: d
+- nodeA: blissful_noether
+  nodeB: unruffled_haslett
+  text: d
+nodes:
+- id: gracious_hellman
+  x: 170
+  y: 253
+- id: flamboyant_morse
+  x: 305
+  y: 165
+- id: distracted_visvesvaraya
+  x: 305
+  y: 363
+- id: kind_jemison
+  x: 466
+  y: 165
+- id: blissful_noether
+  x: 466
+  y: 363
+- accept: true
+  id: unruffled_haslett
+  x: 628
+  y: 268
+self_links: []
+start_links:
+- dx: -126
+  dy: 0
+  node: gracious_hellman
+test_cases:
+- abd
+- acd
+- bcd
+- aca
+- acb
